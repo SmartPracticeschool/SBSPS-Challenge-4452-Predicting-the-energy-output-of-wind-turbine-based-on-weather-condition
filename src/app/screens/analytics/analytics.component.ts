@@ -20,7 +20,6 @@ export class AnalyticsComponent implements OnInit {
       this.route.navigate(['maps']);
     }
     ngOnInit() {
-    if (this.dataService.graphCheck) {
       Chart.pluginService.register({
         beforeDraw: function (chart, easing) {
             if (chart.config.options.chartArea && chart.config.options.chartArea.backgroundColor) {
@@ -44,13 +43,18 @@ export class AnalyticsComponent implements OnInit {
                   data:  this.dataService.windData, // your data array
                   borderColor: '#00AEFF',
                   fill: false,
+                  label: this.dataService.graphCheck ? 'Average Wind Speed' : 'Average Rainfall',
                   // backgroundColor:'#353836'
                 }
               ]
             },
             options: {
               legend: {
-                display: false
+                display: true,
+                align: 'end',
+                labels: {
+                  fontColor: 'white',
+              }
               },
               chartArea: {
                 backgroundColor: '#353836'
@@ -78,5 +82,4 @@ export class AnalyticsComponent implements OnInit {
             }
           });
         }
-    }
 }

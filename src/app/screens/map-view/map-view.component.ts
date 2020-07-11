@@ -14,7 +14,7 @@ export class MapViewComponent implements OnInit {
   lng: number = -49.8046873;
   zoom: number = 5;
   searchToggle = false;
-  windGust:any;
+  windGust = '';
   @Input() adressType: string;
   currentLocation = 'Your Location';
   predDate: any ;
@@ -27,6 +27,7 @@ export class MapViewComponent implements OnInit {
   key = 'ffadfea2485a475d81181733200407';
   key0 = '4af4c374278f469aa370308766faaa6c';
   checkFlag = false;
+  spinnerCheck = false;
   constructor(private route: Router,
               public mapsAPILoader: MapsAPILoader,
               public ngZone: NgZone,
@@ -43,6 +44,10 @@ export class MapViewComponent implements OnInit {
     this.searchToggle = true;
   }
   addEvent($event) {
+    this.windSpeed = '--';
+    this.activePower = '--';
+    this.humidityData = '--';
+    this.windGust = '';
     console.log($event.value);
     this.predDate = new Date($event.value).toISOString().split('T')[0];
     console.log(this.predDate);
@@ -53,16 +58,21 @@ export class MapViewComponent implements OnInit {
     if (this.dataService.windData.length !== 0 && this.dataService.placeName !== '' && this.checkFlag === true) {
       this.route.navigate(['analytics']);
     } else {
-      alert('Wait for Some time and fill all details');
+      // alert('Unabl');
+      this.dataService.openToast('Unable to analysis', 'Ok');
     }
   }
   getGraphData(res) {
     res.ClimateAverages[0].month.forEach((item, i) => {
       // item.avgWindSpeed_kmph
+      let obj = { x: i + 1};
       if (item.avgWindSpeed_kmph === undefined) {
         this.dataService.graphCheck = false;
+        obj['y'] = parseFloat(item.avgDailyRainfall);
+        // avgDailyRainfall
+      } else {
+        obj['y'] = parseFloat(item.avgWindSpeed_kmph);
       }
-      let obj = { x: i + 1, y: parseFloat(item.avgWindSpeed_kmph)};
       console.log(obj);
       this.dataService.windData.push(obj);
     });
@@ -71,6 +81,7 @@ export class MapViewComponent implements OnInit {
   }
   predict() {
     if (this.predDate && this.lat && this.lng) {
+      this.spinnerCheck = true;
       console.log('predict');
       // tslint:disable-next-line: no-unused-expression
       console.log(this.worldWeather + `?key=${this.key}&q=${this.lat},${this.lng}&date=${this.predDate}&format=json`);
@@ -79,26 +90,41 @@ export class MapViewComponent implements OnInit {
         // this.dataService.windData = res.data;
         this.getGraphData(res.data);
         console.log(res.data);
-        this.windSpeed = res.data.current_condition[0].windspeedKmph;
-        this.windDirection = res.data.current_condition[0].winddirDegree;
-        this.humidityData = res.data.current_condition[0].humidity;
-        this.windGust = res.data.weather[0].hourly[0].WindGustKmph;
-        this.dataService.weatherImage = res.data.current_condition[0].weatherIconUrl[0].value;
+        try {
+          this.windSpeed = res.data.current_condition[0].windspeedKmph;
+          this.windDirection = res.data.current_condition[0].winddirDegree;
+          this.humidityData = res.data.current_condition[0].humidity;
+          this.windGust = res.data.weather[0].hourly[0].WindGustKmph;
+          this.dataService.weatherImage = res.data.current_condition[0].weatherIconUrl[0].value;
+        } catch (e) {
+          console.log('hello');
+          this.spinnerCheck = false;
+          this.dataService.openToast('Please try refreshing again', 'Cancel');
+        }
         console.log(this.windSpeed, this.windDirection, this.humidityData);
         // tslint:disable-next-line:max-line-length
+        if (this.windDirection !== '--' && this.windSpeed !== '--' && this.windGust !== '') {
         this.http.get(`https://windz-flask-server.herokuapp.com/predict?windSpeed=${String(this.windSpeed)}&windDirection=${String(this.windDirection)}&windGust=${this.windGust}`,{responseType: 'json'})
         .subscribe((response: any) => {
           this.activePower = parseFloat(response.output);
           // tslint:disable-next-line:max-line-length
           this.dataService.weatherData = {windSpeed: this.windSpeed, windDirection: this.windDirection, windGust: this.windGust, activePower: this.activePower};
           this.checkFlag = true;
+          this.spinnerCheck = false;
+          this.dataService.getThread(res.data);
           console.log(this.activePower);
         });
+      } else {
+        this.checkFlag = false;
+        this.spinnerCheck = false;
+        this.dataService.openToast('Sorry Prediction is not available for the data', 'Cancel');
+      }
       }, err => {
+        this.spinnerCheck = false;
         console.log(err);
       });
     } else {
-      alert('Choose date and location Please');
+      this.dataService.openToast('Choose date and location Please', 'Ok');
     }
   }
   getLocation() {

@@ -24,7 +24,7 @@
 .img {
     height: 80px;
     width: 80px;
-    background-color:#5a5c5b; 
+    /* background-color:#5a5c5b;  */
 }
 .label {
     height: 32%;
@@ -114,4 +114,7 @@
     font-size: 30px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     letter-spacing: 1px;
+    line-height: 30px;
 }
+
+/* b4e37b3342fc4e5e9f6115913201107 */

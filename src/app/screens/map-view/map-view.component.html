@@ -13,6 +13,9 @@
 </div> -->
 
 <div>
+  <div *ngIf="spinnerCheck" class="spinCont">
+      <mat-progress-spinner class="spinner" mode="indeterminate" diameter='20' strokeWidth='50'></mat-progress-spinner>
+  </div>
     <div class="topBar">
       <div class="parentDiv">
       <div *ngIf="searchToggle" class="searchInp">
@@ -86,8 +89,8 @@
       </div>
     </div>
     <div class="navigateURL" >
-      <div class="moreTxt" (click)="predict()"><mat-icon>play_circle_outline</mat-icon><div style="margin-top:3px;margin-left: 5px">Predict</div></div>
-      <div class="moreTxt" style="margin-left: 25px" (click)="gotoMore()"><mat-icon>insert_chart</mat-icon><div style="margin-top:3px;margin-left: 5px">Analysis</div></div>
+      <div class="moreTxt" (click)="predict()"><mat-icon>play_circle_outline</mat-icon><div style="margin-top:3px;margin-left: 5px;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif">Predict</div></div>
+      <div class="moreTxt" style="margin-left: 25px" (click)="gotoMore()"><mat-icon>insert_chart</mat-icon><div style="margin-top:3px;margin-left: 5px;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Analysis</div></div>
     </div>
   </div>
   
