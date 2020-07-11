@@ -18,6 +18,7 @@ export class AppComponent {
   zoom: number = 15;
   searchToggle = false;
   constructor(private route: Router) {
+    // analytics
     route.navigate(['maps']);
   }
   async ngOnInit() {

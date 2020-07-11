@@ -34,7 +34,7 @@
         <button (click)="getSearch()" style="background: transparent" mat-fab color="primary">
             <mat-icon>search</mat-icon>              
         </button>
-        <button  (click)="getLocation()" style="margin-left: 30px;background-color: green" mat-fab color="primary">
+        <button  (click)="getLocation()" style="margin-left: 30px;background-color: skyblue" mat-fab color="primary">
             <mat-icon>gps_fixed</mat-icon>              
         </button>
       </div>
@@ -49,7 +49,7 @@
               <div class="col1">
                 <div class="nameCol">
                     <div class="name">{{currentLocation}}</div>
-                    <div style="color: green;margin-bottom: 20px;font-weight: bold;">Working Great, Yay !!</div>
+                    <div style="color: skyblue;margin-bottom: 20px;font-weight: bold;">Working Great, Yay !!</div>
                 </div>
                 
                 <div class="pick">
@@ -78,14 +78,16 @@
             <mat-grid-tile colspan="1" class="col4">
                 <div class="col2">
                     <div class="bottom">LV Active Power</div>
-                    <div><span class="num">{{activePower}}</span><span style="color: whitesmoke;margin-left: 3px;">kW</span></div>
+                    <div *ngIf="activePower === '--'"><span class="num">{{activePower}}</span><span style="color: whitesmoke;margin-left: 3px;">kW</span></div>
+                    <div *ngIf="activePower !== '--'"><span class="num1">{{activePower | number:'1.2-2'}}</span><span style="color: whitesmoke;margin-left: 3px;">kW</span></div>
                 </div>
             </mat-grid-tile>
           </mat-grid-list>
       </div>
     </div>
     <div class="navigateURL" >
-      <div class="moreTxt" (click)="predict()"><mat-icon>arrow_drop_down_circle</mat-icon><div style="margin-top:3px;margin-left: 5px">Predict</div></div>
+      <div class="moreTxt" (click)="predict()"><mat-icon>play_circle_outline</mat-icon><div style="margin-top:3px;margin-left: 5px">Predict</div></div>
+      <div class="moreTxt" style="margin-left: 25px" (click)="gotoMore()"><mat-icon>insert_chart</mat-icon><div style="margin-top:3px;margin-left: 5px">Analysis</div></div>
     </div>
   </div>
   

@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, NgZone, Input, Output, EventE
 import {Router} from '@angular/router';
 import { MapsAPILoader } from '@agm/core';
 import {HttpClient} from '@angular/common/http';
+import { DataService } from 'src/app/services/data.service';
 @Component({
   selector: 'app-map-view',
   templateUrl: './map-view.component.html',
@@ -11,20 +12,27 @@ export class MapViewComponent implements OnInit {
   texto: string = 'Wenceslau Braz - Cuidado com as cargas';
   lat: number = -23.8779431;
   lng: number = -49.8046873;
-  zoom: number = 15;
+  zoom: number = 5;
   searchToggle = false;
+  windGust:any;
   @Input() adressType: string;
   currentLocation = 'Your Location';
   predDate: any ;
   windSpeed = '--';
   humidityData = '--';
-  activePower = '--';
+  activePower: any = '--';
   windDirection = '';
   worldWeather = 'https://api.worldweatheronline.com/premium/v1/weather.ashx';
   placeUrl = 'https://api.opencagedata.com/geocode/v1/json';
-  key = '';
-  key0 = '';
-  constructor(private route: Router, public mapsAPILoader:MapsAPILoader, public ngZone: NgZone,private http: HttpClient) { }
+  key = 'ffadfea2485a475d81181733200407';
+  key0 = '4af4c374278f469aa370308766faaa6c';
+  checkFlag = false;
+  constructor(private route: Router,
+              public mapsAPILoader: MapsAPILoader,
+              public ngZone: NgZone,
+              private http: HttpClient,
+              private dataService: DataService
+              ) { }
   ngOnInit() {
     // this.findAdress();
   }
@@ -34,16 +42,32 @@ export class MapViewComponent implements OnInit {
   getSearch() {
     this.searchToggle = true;
   }
-  clickNav(item) {
-    this.route.navigate([item.route])
-  }
-  toPage() {
-    this.route.navigate(['analytics']);
-  }
   addEvent($event) {
     console.log($event.value);
     this.predDate = new Date($event.value).toISOString().split('T')[0];
     console.log(this.predDate);
+    this.dataService.selDay = String($event.value).split(' ')[2];
+    this.dataService.selMonth = String($event.value).split(' ')[1];
+  }
+  gotoMore() {
+    if (this.dataService.windData.length !== 0 && this.dataService.placeName !== '' && this.checkFlag === true) {
+      this.route.navigate(['analytics']);
+    } else {
+      alert('Wait for Some time and fill all details');
+    }
+  }
+  getGraphData(res) {
+    res.ClimateAverages[0].month.forEach((item, i) => {
+      // item.avgWindSpeed_kmph
+      if (item.avgWindSpeed_kmph === undefined) {
+        this.dataService.graphCheck = false;
+      }
+      let obj = { x: i + 1, y: parseFloat(item.avgWindSpeed_kmph)};
+      console.log(obj);
+      this.dataService.windData.push(obj);
+    });
+    console.log(this.dataService.windData);
+    // this.route.navigate(['analytics']);
   }
   predict() {
     if (this.predDate && this.lat && this.lng) {
@@ -52,14 +76,23 @@ export class MapViewComponent implements OnInit {
       console.log(this.worldWeather + `?key=${this.key}&q=${this.lat},${this.lng}&date=${this.predDate}&format=json`);
       this.http.get(this.worldWeather + `?key=${this.key}&q=${this.lat},${this.lng}&format=json&date=${this.predDate}`)
       .subscribe((res: any) => {
+        // this.dataService.windData = res.data;
+        this.getGraphData(res.data);
+        console.log(res.data);
         this.windSpeed = res.data.current_condition[0].windspeedKmph;
         this.windDirection = res.data.current_condition[0].winddirDegree;
         this.humidityData = res.data.current_condition[0].humidity;
+        this.windGust = res.data.weather[0].hourly[0].WindGustKmph;
+        this.dataService.weatherImage = res.data.current_condition[0].weatherIconUrl[0].value;
         console.log(this.windSpeed, this.windDirection, this.humidityData);
         // tslint:disable-next-line:max-line-length
-        this.http.post('http://127.0.0.1:5000/predict', {windSpeed: this.windSpeed, WindDirection: this.windDirection},{responseType: 'json'})
-        .subscribe((response) => {
-          console.log(response);
+        this.http.get(`https://windz-flask-server.herokuapp.com/predict?windSpeed=${String(this.windSpeed)}&windDirection=${String(this.windDirection)}&windGust=${this.windGust}`,{responseType: 'json'})
+        .subscribe((response: any) => {
+          this.activePower = parseFloat(response.output);
+          // tslint:disable-next-line:max-line-length
+          this.dataService.weatherData = {windSpeed: this.windSpeed, windDirection: this.windDirection, windGust: this.windGust, activePower: this.activePower};
+          this.checkFlag = true;
+          console.log(this.activePower);
         });
       }, err => {
         console.log(err);
@@ -79,6 +112,7 @@ export class MapViewComponent implements OnInit {
           .subscribe((res: any) => {
             console.log(res.results[0].formatted);
             this.currentLocation = res.results[0].formatted;
+            this.dataService.placeName = this.currentLocation;
           });
         }
       });
