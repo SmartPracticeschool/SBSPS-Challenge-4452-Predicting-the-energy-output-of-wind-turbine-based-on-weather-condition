@@ -18,7 +18,6 @@ export class AppComponent {
   zoom: number = 15;
   searchToggle = false;
   constructor(private route: Router) {
-    // analytics
     route.navigate(['maps']);
   }
   async ngOnInit() {
@@ -35,7 +34,6 @@ export class AppComponent {
   toPage() {
     this.route.navigate(['analytics']);
   }
-  
   prepareRoute(outlet: RouterOutlet) {
     return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }

@@ -20,12 +20,5 @@ export class DataService {
     });
   }
   getThread(data) {
-    // data.weather[0].hourly.forEach((item, i) => {
-    //   this.http.get(`https://windz-flask-server.herokuapp.com/predict?windSpeed=${item.windspeedKmph}&windDirection=${item.winddirDegree}&windGust=${item.WindGustKmph}`, {responseType: 'json'})
-    //     .subscribe((response: any) => {
-    //       this.hourlyTable.push(parseFloat(response.output));
-    //     });
-    // });
-    // console.log('Hourly Data', this.hourlyTable);
   }
 }

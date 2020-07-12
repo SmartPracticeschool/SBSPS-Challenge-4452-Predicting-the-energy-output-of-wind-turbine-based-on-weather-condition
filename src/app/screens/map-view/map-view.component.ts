@@ -35,7 +35,6 @@ export class MapViewComponent implements OnInit {
               private dataService: DataService
               ) { }
   ngOnInit() {
-    // this.findAdress();
   }
   removeSearch() {
     this.searchToggle = false;
@@ -48,9 +47,7 @@ export class MapViewComponent implements OnInit {
     this.activePower = '--';
     this.humidityData = '--';
     this.windGust = '';
-    console.log($event.value);
     this.predDate = new Date($event.value).toISOString().split('T')[0];
-    console.log(this.predDate);
     this.dataService.selDay = String($event.value).split(' ')[2];
     this.dataService.selMonth = String($event.value).split(' ')[1];
   }
@@ -58,38 +55,28 @@ export class MapViewComponent implements OnInit {
     if (this.dataService.windData.length !== 0 && this.dataService.placeName !== '' && this.checkFlag === true) {
       this.route.navigate(['analytics']);
     } else {
-      // alert('Unabl');
       this.dataService.openToast('Unable to analysis', 'Ok');
     }
   }
   getGraphData(res) {
     res.ClimateAverages[0].month.forEach((item, i) => {
-      // item.avgWindSpeed_kmph
       let obj = { x: i + 1};
       if (item.avgWindSpeed_kmph === undefined) {
         this.dataService.graphCheck = false;
         obj['y'] = parseFloat(item.avgDailyRainfall);
-        // avgDailyRainfall
       } else {
         obj['y'] = parseFloat(item.avgWindSpeed_kmph);
       }
-      console.log(obj);
       this.dataService.windData.push(obj);
     });
-    console.log(this.dataService.windData);
-    // this.route.navigate(['analytics']);
   }
   predict() {
     if (this.predDate && this.lat && this.lng) {
       this.spinnerCheck = true;
-      console.log('predict');
       // tslint:disable-next-line: no-unused-expression
-      console.log(this.worldWeather + `?key=${this.key}&q=${this.lat},${this.lng}&date=${this.predDate}&format=json`);
       this.http.get(this.worldWeather + `?key=${this.key}&q=${this.lat},${this.lng}&format=json&date=${this.predDate}`)
       .subscribe((res: any) => {
-        // this.dataService.windData = res.data;
         this.getGraphData(res.data);
-        console.log(res.data);
         try {
           this.windSpeed = res.data.current_condition[0].windspeedKmph;
           this.windDirection = res.data.current_condition[0].winddirDegree;
@@ -97,11 +84,9 @@ export class MapViewComponent implements OnInit {
           this.windGust = res.data.weather[0].hourly[0].WindGustKmph;
           this.dataService.weatherImage = res.data.current_condition[0].weatherIconUrl[0].value;
         } catch (e) {
-          console.log('hello');
           this.spinnerCheck = false;
           this.dataService.openToast('Please try refreshing again', 'Cancel');
         }
-        console.log(this.windSpeed, this.windDirection, this.humidityData);
         // tslint:disable-next-line:max-line-length
         if (this.windDirection !== '--' && this.windSpeed !== '--' && this.windGust !== '') {
         this.http.get(`https://windz-flask-server.herokuapp.com/predict?windSpeed=${String(this.windSpeed)}&windDirection=${String(this.windDirection)}&windGust=${this.windGust}`,{responseType: 'json'})
@@ -112,7 +97,6 @@ export class MapViewComponent implements OnInit {
           this.checkFlag = true;
           this.spinnerCheck = false;
           this.dataService.getThread(res.data);
-          console.log(this.activePower);
         });
       } else {
         this.checkFlag = false;
@@ -121,7 +105,6 @@ export class MapViewComponent implements OnInit {
       }
       }, err => {
         this.spinnerCheck = false;
-        console.log(err);
       });
     } else {
       this.dataService.openToast('Choose date and location Please', 'Ok');
@@ -133,10 +116,8 @@ export class MapViewComponent implements OnInit {
         if (postion) {
           this.lat = postion.coords.latitude;
           this.lng = postion.coords.longitude;
-          console.log(this.lat, this.lng);
           this.http.get(this.placeUrl + `?key=${this.key0}&q=${this.lat},${this.lng}`)
           .subscribe((res: any) => {
-            console.log(res.results[0].formatted);
             this.currentLocation = res.results[0].formatted;
             this.dataService.placeName = this.currentLocation;
           });

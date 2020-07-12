@@ -36,15 +36,13 @@ export class AnalyticsComponent implements OnInit {
       this.chart = new Chart('ChatView', {
             type: 'line',
             data: {
-              labels: this.labels, // your labels array
+              labels: this.labels,
               datasets: [
                 {
-                  // [{x: 3, y: 12}, {x: 1 , y :10}]
-                  data:  this.dataService.windData, // your data array
+                  data:  this.dataService.windData,
                   borderColor: '#00AEFF',
                   fill: false,
                   label: this.dataService.graphCheck ? 'Average Wind Speed' : 'Average Rainfall',
-                  // backgroundColor:'#353836'
                 }
               ]
             },
@@ -65,7 +63,6 @@ export class AnalyticsComponent implements OnInit {
                   gridLines: {
                     display: false,
                 }, ticks: {
-                  // beginAtZero: true,
                   fontColor: "white",
                }
               }],
@@ -74,7 +71,6 @@ export class AnalyticsComponent implements OnInit {
                   gridLines: {
                     display: false,
                 }, ticks: {
-                  // beginAtZero: true,
                   fontColor: '#5a5c5b',
                }
               }],
