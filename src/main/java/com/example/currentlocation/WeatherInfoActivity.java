@@ -34,10 +34,10 @@ public class WeatherInfoActivity extends AppCompatActivity {
         String l1 = String.valueOf(lat);
         String l2 = String.valueOf(lng);
 
-        /*t2 = findViewById(R.id.textView2);
+        t2 = findViewById(R.id.textView2);
         t4 = findViewById(R.id.textView4);
         t6 = findViewById(R.id.textView6);
-        t8 = findViewById(R.id.textView8);*/
+        t8 = findViewById(R.id.textView8);
 
         downloadtask task = new downloadtask();
 
@@ -123,9 +123,9 @@ public class WeatherInfoActivity extends AppCompatActivity {
 
                 Log.i("ds","Before sending");
 
-                /*.setText(windSpeed);
+                t2.setText(windSpeed);
                 t4.setText(windDir);
-                t6.setText(WindGustKmph);*/
+                t6.setText(WindGustKmph);
 
                 SendData data1 = new SendData();
                 data1.execute("https://windz-flask-server.herokuapp.com/predict?windSpeed="+windSpeed+"&windDirection="+windDir+"&windGust="+WindGustKmph);
@@ -181,7 +181,7 @@ public class WeatherInfoActivity extends AppCompatActivity {
             int y = (int) x;
             s1 = String.valueOf(y);
             Log.i("Info", s1);
-            //t8.setText(s1);
+            t8.setText(s1);
         }
     }
 }
