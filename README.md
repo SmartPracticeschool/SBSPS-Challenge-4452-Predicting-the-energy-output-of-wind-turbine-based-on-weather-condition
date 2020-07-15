@@ -1,3 +1,9 @@
+## Demo Video and project report Drive link
+
+https://drive.google.com/file/d/15gfzz9_JwTYKBvqtn1gqdrAUTZUw9-1K/view?usp=drivesdk
+
+
+
 # Dashboard
 
 The angular dashboard used to analysis and predict the wind farm output according to users location.
